@@ -21,7 +21,7 @@
 | Comparator offset | ≤ 0.49 LSB (systematic, post-layout, TT/SS/FF) |
 | FoM (Walden) | 152 pJ/step at 400 kS/s (124 pJ/step at 2 MS/s) |
 | Outputs | 8-bit parallel DOUT[7:0] + DVALID + EOC, SAMPLE (S/H control), SPI (SCLK/SDO/CS_N) |
-| Pads | 22 signal (6 analog, 2 digital in, 14 out) + 8 digital power (4 DVDD, 4 DVSS) |
+| Pads | 23 I/O (5 analog, 2 shield, 2 digital in, 14 out) + 8 digital power (4 DVDD, 4 DVSS); 9 slots unused |
 | Corners verified | TT 27 °C, SS 4.5 V 85 °C, FF 5.5 V 0 °C, SF/FS, resistor cross corners |
 | Physical checks | DRC 0, LVS match, antenna clean (KLayout, SCL decks) |
 | Simulators | ngspice-45 and Cadence Spectre 20.1 (identical codes, 112/112) |
