@@ -1,0 +1,12 @@
+Voice-band model (SLOW, VDD 4.5 V, LSB 13.67 mV): tone 1003.9 Hz at -1 dBFS, ADC 2 MS/s -> CIC/R25 + FIR/R5 -> 16 kS/s, band 50 Hz - 7 kHz
+post-layout ADC: comparator offsets PMOS -0.01 LSB, NMOS +0.18 LSB (hand-over step +0.18 LSB at code 64)
+converter                          noise sigma  SNDR dB  SNR dB   ENOB  THD dBc   (before decimation: SNDR over 0-1 MHz)
+ideal 8-bit                               0.00     68.9    75.8  11.16    -70.0   (raw  46.3 dB)
+ideal 8-bit                               0.20     69.0    69.5  11.16    -78.5   (raw  45.2 dB)
+ideal 8-bit                               0.35     66.9    67.0  10.82    -83.0   (raw  43.7 dB)
+ideal 8-bit                               0.50     64.8    64.9  10.48    -82.4   (raw  42.1 dB)
+post-layout ADC (SLOW, extracted)         0.00     64.9    76.1  10.49    -65.3   (raw  46.1 dB)
+post-layout ADC (SLOW, extracted)         0.20     63.4    69.4  10.25    -64.7   (raw  45.1 dB)
+post-layout ADC (SLOW, extracted)         0.35     62.5    66.9  10.08    -64.4   (raw  43.6 dB)
+post-layout ADC (SLOW, extracted)         0.50     61.5    64.9   9.92    -64.2   (raw  42.0 dB)
+ideal 16-bit (reference)                     -    104.7   104.7  17.10   -135.7

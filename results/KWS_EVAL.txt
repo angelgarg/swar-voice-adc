@@ -1,0 +1,12 @@
+KWS accuracy (10 keywords, 1000 test clips, CNN 21754 params, trained on 16-bit clips)
+converter                       level  accuracy
+16-bit reference                 -6dB     93.4%
+ideal 8-bit @16 kS/s             -6dB     91.6%
+post-layout ADC NOM (OSR 125)     -6dB     90.5%
+post-layout ADC SLOW (OSR 125)     -6dB     90.2%
+post-layout ADC FAST (OSR 125)     -6dB     90.2%
+16-bit reference                -26dB     88.5%
+ideal 8-bit @16 kS/s            -26dB     66.6%
+post-layout ADC NOM (OSR 125)    -26dB     83.0%
+post-layout ADC SLOW (OSR 125)    -26dB     81.8%
+post-layout ADC FAST (OSR 125)    -26dB     83.1%
