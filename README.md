@@ -8,6 +8,8 @@ tiny neural network on an ESP32-S3 recognises spoken keywords on the device. No 
 > transistor-level simulation). All voice and keyword results below are **simulations** that use the post-layout
 > chip model. Silicon is not fabricated yet.
 
+**Pitch deck:** https://angelgarg.github.io/swar-voice-adc/
+
 ![Chip layout with pins and blocks](docs/chip_pinout_blocks_4x4.png)
 
 ## How it works
@@ -60,7 +62,7 @@ On quiet speech, oversampling recovers most of what a plain 8-bit converter lose
 | `model/kws_eval.py` | trains the keyword CNN, then evaluates it through the ADC model; `kws_cnn.pt` = trained weights |
 | `data/adc_transfer/` | post-layout ADC transfer data (DAC level of every code, extracted netlist), TT / SS / FF |
 | `results/` | voice, keyword and chip summary results |
-| `docs/` | chip layout image, transfer curve / DNL / INL plots |
+| `docs/` | pitch deck web page (`index.html`, GitHub Pages), chip layout image, transfer curve / DNL / INL plots |
 
 ## Run it
 

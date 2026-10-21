@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swar Pitch Deck</title>
+<meta name="description" content="Swar: offline voice AI on a home-grown 8-bit SAR ADC chip designed for SCL 1.2 µm.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fcfcfb; --surface: #ffffff; --ink: #1c1c1a; --ink-2: #4a4944; --muted: #77756d; --line: #e4e3de;
+  --accent: #2a78d6; --accent-soft: #e6f0fb; --neutral-bar: #b9b7ae; --neutral-bar-2: #d8d6cf;
+  --good: #1a7f4b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413; --surface: #1c1c1b; --ink: #f0efec; --ink-2: #c9c8c0; --muted: #9a998f; --line: #2e2e2b;
+    --accent: #3987e5; --accent-soft: #1b2c40; --neutral-bar: #6c6b64; --neutral-bar-2: #46453f; --good: #3fb37a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141413; --surface: #1c1c1b; --ink: #f0efec; --ink-2: #c9c8c0; --muted: #9a998f; --line: #2e2e2b;
+  --accent: #3987e5; --accent-soft: #1b2c40; --neutral-bar: #6c6b64; --neutral-bar-2: #46453f; --good: #3fb37a;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: Inter, system-ui, sans-serif; line-height: 1.45;
+       -webkit-font-smoothing: antialiased; }
+.deck { height: 100vh; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+.slide { min-height: 100vh; scroll-snap-align: start; display: flex; flex-direction: column; justify-content: center;
+         padding: 56px clamp(16px, 6vw, 96px) 72px; position: relative; border-bottom: 1px solid var(--line); }
+.kicker { font: 600 13px/1 "JetBrains Mono", monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--accent);
+          margin-bottom: 14px; }
+h1 { font-size: clamp(34px, 5.2vw, 64px); line-height: 1.05; margin: 0 0 14px; font-weight: 800; letter-spacing: -.02em; }
+h2 { font-size: clamp(26px, 3.6vw, 44px); line-height: 1.1; margin: 0 0 22px; font-weight: 800; letter-spacing: -.015em; }
+.lead { font-size: clamp(17px, 1.8vw, 22px); color: var(--ink-2); max-width: 46ch; margin: 0 0 26px; }
+.grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(20px, 4vw, 56px); align-items: center; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
+ul.points { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+ul.points li { padding-left: 22px; position: relative; font-size: clamp(15px, 1.35vw, 18px); color: var(--ink-2); }
+ul.points li::before { content: ""; position: absolute; left: 0; top: .55em; width: 10px; height: 10px; border-radius: 3px;
+                       background: var(--accent); }
+ul.points b { color: var(--ink); }
+.figure img { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); background: #fff; display: block; }
+.caption { font-size: 13px; color: var(--muted); margin-top: 8px; }
+/* pipeline */
+.pipe { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 6px 0 26px; }
+.stage { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; position: relative; }
+.stage.ours { border: 2px solid var(--accent); background: var(--accent-soft); }
+.stage h3 { margin: 0 0 6px; font-size: 16px; }
+.stage p { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+.stage .tag { font: 500 11px/1 "JetBrains Mono", monospace; color: var(--muted); display: block; margin-bottom: 8px; }
+.stage:not(:last-child)::after { content: "→"; position: absolute; right: -14px; top: 50%; transform: translateY(-50%);
+                                 color: var(--muted); font-size: 18px; z-index: 1; }
+.callout { border-left: 4px solid var(--accent); padding: 10px 16px; background: var(--accent-soft); border-radius: 0 10px 10px 0;
+           font-size: clamp(15px, 1.4vw, 18px); max-width: 70ch; }
+/* spec tiles */
+.specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+.tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.tile .v { font-size: clamp(20px, 2.1vw, 28px); font-weight: 800; letter-spacing: -.01em; }
+.tile .k { font-size: 12.5px; color: var(--muted); }
+/* chart */
+.chart { display: grid; gap: 22px; }
+.group h4 { margin: 0 0 10px; font-size: 14px; color: var(--ink-2); font-weight: 600; }
+.row { display: grid; grid-template-columns: 170px 1fr 64px; align-items: center; gap: 10px; margin-bottom: 8px; }
+.row .lab { font-size: 14px; color: var(--ink-2); }
+.row .track { height: 22px; position: relative; }
+.row .bar { height: 100%; border-radius: 0 4px 4px 0; background: var(--neutral-bar-2); transition: filter .15s; }
+.row .bar.ref { background: var(--neutral-bar); }
+.row .bar.ours { background: var(--accent); }
+.row .val { font: 600 14px "JetBrains Mono", monospace; color: var(--ink); text-align: right; }
+.row:hover .bar { filter: brightness(1.08); }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--bg); font-size: 12.5px; padding: 6px 9px;
+       border-radius: 6px; opacity: 0; transition: opacity .1s; z-index: 10; max-width: 260px; }
+.headline { font-size: clamp(20px, 2.2vw, 28px); font-weight: 800; margin: 0 0 6px; }
+.headline em { font-style: normal; color: var(--accent); }
+.foot { font-size: 12.5px; color: var(--muted); margin-top: 14px; }
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 30px 1fr; gap: 10px; font-size: clamp(15px, 1.3vw, 17px);
+            color: var(--ink-2); align-items: start; }
+.steps li::before { content: counter(s); width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff;
+                    font: 700 13px/26px Inter, sans-serif; text-align: center; }
+.links a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.links a:hover { text-decoration: underline; }
+/* nav */
+.nav { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); display: grid; gap: 10px; z-index: 5; }
+.nav a { width: 10px; height: 10px; border-radius: 50%; background: var(--line); display: block; }
+.nav a.on { background: var(--accent); }
+.pageno { position: absolute; bottom: 22px; right: clamp(16px, 6vw, 96px); font: 500 12px "JetBrains Mono", monospace; color: var(--muted); }
+.theme { position: fixed; top: 14px; right: 14px; z-index: 6; background: var(--surface); color: var(--ink-2); border: 1px solid var(--line);
+         border-radius: 999px; padding: 6px 12px; font: 500 12px Inter, sans-serif; cursor: pointer; }
+@media (max-width: 860px) {
+  .grid { grid-template-columns: 1fr; }
+  .pipe { grid-template-columns: 1fr; }
+  .stage:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -16px; transform: translateX(50%); }
+  .specs { grid-template-columns: repeat(2, 1fr); }
+  .row { grid-template-columns: 110px 1fr 56px; }
+  .nav { display: none; }
+  .deck { scroll-snap-type: none; }
+  .slide { min-height: auto; padding-top: 64px; }
+}
+@media print {
+  @page { size: 13.333in 7.5in; margin: 0; }
+  .deck { height: auto; overflow: visible; }
+  .slide { height: 7.5in; min-height: 0; page-break-after: always; border: 0; padding: .55in .8in; }
+  .nav, .theme, .tip { display: none !important; }
+}
+</style>
+</head>
+<body>
+<button class="theme" id="theme" aria-label="Toggle dark mode">Dark / light</button>
+<nav class="nav" id="nav" aria-label="Slides"></nav>
+<div class="tip" id="tip" role="tooltip"></div>
+<main class="deck" id="deck">
+
+<!-- 1 -->
+<section class="slide" id="s1">
+  <div class="grid">
+    <div>
+      <div class="kicker">Voice AI on Indian silicon</div>
+      <h1>Swar: offline voice AI on a home-grown chip</h1>
+      <p class="lead">An 8-bit ADC we designed for India's SCL 1.2&nbsp;µm fab, paired with keyword AI that runs on the device.</p>
+      <ul class="points">
+        <li><b>Imported ears.</b> Voice devices depend on imported audio chips.</li>
+        <li><b>Cloud brains.</b> Most voice AI needs the internet: latency, privacy and connectivity costs.</li>
+        <li><b>The gap.</b> There is no Indian-fab "ear" for voice interfaces.</li>
+      </ul>
+    </div>
+    <div class="figure">
+      <img src="chip_pinout_blocks_4x4.png" alt="Layout of the 4 by 4 mm ADC chip with every pin and block labelled">
+      <div class="caption">Our ADC chip: 4 × 4 mm, SCL 1.2 µm, layout verified.</div>
+    </div>
+  </div>
+  <div class="pageno">1 / 5</div>
+</section>
+
+<!-- 2 -->
+<section class="slide" id="s2">
+  <div class="kicker">How it works</div>
+  <h2>The chip hears, the FPGA cleans, the AI understands</h2>
+  <div class="pipe">
+    <div class="stage"><span class="tag">input</span><h3>Microphone</h3><p>Preamp and sample-and-hold on the board.</p></div>
+    <div class="stage ours"><span class="tag">our chip</span><h3>8-bit SAR ADC</h3><p>2 MS/s, designed for SCL 1.2 µm.</p></div>
+    <div class="stage"><span class="tag">Basys3 FPGA</span><h3>Oversampling filter</h3><p>CIC + FIR to 16 kHz audio, about 10-bit quality.</p></div>
+    <div class="stage"><span class="tag">ESP32-S3</span><h3>Keyword AI</h3><p>Log-mel features and a 21.7k-parameter CNN.</p></div>
+    <div class="stage"><span class="tag">output</span><h3>Action</h3><p>10 commands, no internet needed.</p></div>
+  </div>
+  <div class="callout"><b>The trick is oversampling.</b> Sampling 125× faster than the audio rate and filtering on the FPGA
+    turns a cheap 8-bit chip into voice-quality audio: about 10 bits in the voice band.</div>
+  <div class="pageno">2 / 5</div>
+</section>
+
+<!-- 3 -->
+<section class="slide" id="s3">
+  <div class="kicker">The chip we built</div>
+  <h2>A complete ADC, verified ready for fabrication</h2>
+  <div class="grid">
+    <div>
+      <div class="specs">
+        <div class="tile"><div class="v">8-bit</div><div class="k">SAR, R-2R DAC</div></div>
+        <div class="tile"><div class="v">7.8–7.9</div><div class="k">ENOB (bits)</div></div>
+        <div class="tile"><div class="v">≤ 0.27</div><div class="k">DNL (LSB), no missing codes</div></div>
+        <div class="tile"><div class="v">13.9 mW</div><div class="k">power at 400 kS/s</div></div>
+        <div class="tile"><div class="v">5 V</div><div class="k">supply, 4 V input range</div></div>
+        <div class="tile"><div class="v">4 × 4 mm</div><div class="k">die, SCL standard frame</div></div>
+        <div class="tile"><div class="v">2 MS/s</div><div class="k">max sample rate</div></div>
+        <div class="tile"><div class="v">0 / match</div><div class="k">DRC errors / LVS</div></div>
+      </div>
+      <ul class="points">
+        <li><b>Post-layout verified:</b> every transistor and wire, at all process corners.</li>
+        <li><b>Cross-checked:</b> Cadence Spectre and ngspice agree code for code.</li>
+      </ul>
+    </div>
+    <div class="figure">
+      <img src="ADC_VTC_DNL_INL.png" alt="Transfer curve, DNL and INL plots of the post-layout ADC at three corners">
+      <div class="caption">Post-layout transfer curve, DNL and INL at TT, SS and FF.</div>
+    </div>
+  </div>
+  <div class="pageno">3 / 5</div>
+</section>
+
+<!-- 4 -->
+<section class="slide" id="s4">
+  <div class="kicker">Voice AI results</div>
+  <h2>Keyword accuracy, 10 keywords, 1000 test clips</h2>
+  <p class="headline"><em>+16 points</em> over a plain 8-bit converter on quiet speech, within 3 points of a 16-bit mic.</p>
+  <div class="chart" id="chart"></div>
+  <p class="foot">Simulation with the post-layout chip model; silicon pending. Voice-band quality rises from 7.4 to about 10 bits
+    after FPGA oversampling.</p>
+  <div class="pageno">4 / 5</div>
+</section>
+
+<!-- 5 -->
+<section class="slide" id="s5">
+  <div class="kicker">Impact and next steps</div>
+  <h2>Private, low-cost voice control on Indian silicon</h2>
+  <div class="grid">
+    <div>
+      <ul class="points">
+        <li><b>Homes and rural areas:</b> low-cost voice control that works offline.</li>
+        <li><b>Assistive devices:</b> hands-free control for the elderly and people with disabilities.</li>
+        <li><b>Education:</b> an open voice-AI kit built on an Indian-fab chip.</li>
+      </ul>
+      <p class="links" style="margin-top:22px">Code and results:
+        <a href="https://github.com/angelgarg/swar-voice-adc">github.com/angelgarg/swar-voice-adc</a></p>
+    </div>
+    <div class="card">
+      <ol class="steps">
+        <li>Tape out the chip at SCL.</li>
+        <li>Build the board: mic, sample-and-hold, Basys3, ESP32-S3.</li>
+        <li>Live keyword demo on real silicon.</li>
+        <li>More keywords and Indian languages.</li>
+        <li>Retune the AI on measured silicon data.</li>
+      </ol>
+      <p style="margin:16px 0 0;font-size:15px;color:var(--ink-2)"><b style="color:var(--ink)">Our ask:</b> support for
+        fabrication and board build, and mentorship on deployment.</p>
+    </div>
+  </div>
+  <div class="pageno">5 / 5</div>
+</section>
+</main>
+
+<script>
+// keyword-accuracy chart (values from results/KWS_EVAL.txt)
+const groups = [
+  { title: "Normal speech (−6 dBFS)", rows: [
+    { k: "16-bit microphone", v: 93.4, cls: "ref" },
+    { k: "Plain 8-bit", v: 91.6, cls: "" },
+    { k: "Our chip + FPGA", v: 90.5, cls: "ours", note: "TT corner; SS / FF 90.2 %" } ] },
+  { title: "Quiet speech (−26 dBFS)", rows: [
+    { k: "16-bit microphone", v: 88.5, cls: "ref" },
+    { k: "Plain 8-bit", v: 66.6, cls: "" },
+    { k: "Our chip + FPGA", v: 83.0, cls: "ours", note: "TT corner; SS 81.8 %, FF 83.1 %" } ] } ];
+const chart = document.getElementById("chart"), tip = document.getElementById("tip");
+for (const g of groups) {
+  const el = document.createElement("div"); el.className = "group";
+  el.innerHTML = `<h4>${g.title}</h4>`;
+  for (const r of g.rows) {
+    const row = document.createElement("div"); row.className = "row";
+    row.innerHTML = `<span class="lab">${r.k}</span><span class="track"><span class="bar ${r.cls}" style="width:${r.v}%"></span></span><span class="val">${r.v.toFixed(1)}%</span>`;
+    row.addEventListener("mousemove", e => {
+      tip.textContent = `${r.k}: ${r.v.toFixed(1)} % accuracy` + (r.note ? ` (${r.note})` : "");
+      tip.style.left = (e.clientX + 14) + "px"; tip.style.top = (e.clientY + 14) + "px"; tip.style.opacity = 1; });
+    row.addEventListener("mouseleave", () => tip.style.opacity = 0);
+    el.appendChild(row);
+  }
+  chart.appendChild(el);
+}
+// navigation: dots, arrow keys / page keys
+const deck = document.getElementById("deck"), slides = [...document.querySelectorAll(".slide")], nav = document.getElementById("nav");
+slides.forEach((s, i) => { const a = document.createElement("a"); a.href = "#" + s.id; a.setAttribute("aria-label", "Slide " + (i + 1)); nav.appendChild(a); });
+const dots = [...nav.children];
+const cur = () => slides.reduce((b, s, i) => Math.abs(s.getBoundingClientRect().top) < Math.abs(slides[b].getBoundingClientRect().top) ? i : b, 0);
+const mark = () => { const c = cur(); dots.forEach((d, i) => d.classList.toggle("on", i === c)); };
+deck.addEventListener("scroll", mark, { passive: true }); mark();
+document.addEventListener("keydown", e => {
+  const c = cur();
+  if (["ArrowDown", "ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); slides[Math.min(c + 1, slides.length - 1)].scrollIntoView(); }
+  if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); slides[Math.max(c - 1, 0)].scrollIntoView(); }
+});
+// theme toggle (remembered per viewer)
+const root = document.documentElement;
+try { const t = localStorage.getItem("swar-theme"); if (t) root.dataset.theme = t; } catch (e) {}
+document.getElementById("theme").addEventListener("click", () => {
+  const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  root.dataset.theme = dark ? "light" : "dark";
+  try { localStorage.setItem("swar-theme", root.dataset.theme); } catch (e) {}
+});
+</script>
+</body>
+</html>
