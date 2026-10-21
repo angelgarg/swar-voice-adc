@@ -58,15 +58,15 @@ ul.points b { color: var(--ink); }
 /* spec tiles */
 .specs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
 .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
-.tile .v { font-size: clamp(20px, 2.1vw, 28px); font-weight: 800; letter-spacing: -.01em; }
+.tile .v { font-size: clamp(18px, 1.8vw, 24px); white-space: nowrap; font-weight: 800; letter-spacing: -.01em; }
 .tile .k { font-size: 12.5px; color: var(--muted); }
 /* chart */
 .chart { display: grid; gap: 22px; }
 .group h4 { margin: 0 0 10px; font-size: 14px; color: var(--ink-2); font-weight: 600; }
 .row { display: grid; grid-template-columns: 170px 1fr 64px; align-items: center; gap: 10px; margin-bottom: 8px; }
 .row .lab { font-size: 14px; color: var(--ink-2); }
-.row .track { height: 22px; position: relative; }
-.row .bar { height: 100%; border-radius: 0 4px 4px 0; background: var(--neutral-bar-2); transition: filter .15s; }
+.row .track { height: 22px; position: relative; display: block; background: var(--line); border-radius: 0 4px 4px 0; }
+.row .bar { display: block; height: 100%; border-radius: 0 4px 4px 0; background: var(--neutral-bar-2); transition: filter .15s; }
 .row .bar.ref { background: var(--neutral-bar); }
 .row .bar.ours { background: var(--accent); }
 .row .val { font: 600 14px "JetBrains Mono", monospace; color: var(--ink); text-align: right; }
@@ -165,7 +165,7 @@ ul.points b { color: var(--ink); }
         <div class="tile"><div class="v">5 V</div><div class="k">supply, 4 V input range</div></div>
         <div class="tile"><div class="v">4 × 4 mm</div><div class="k">die, SCL standard frame</div></div>
         <div class="tile"><div class="v">2 MS/s</div><div class="k">max sample rate</div></div>
-        <div class="tile"><div class="v">0 / match</div><div class="k">DRC errors / LVS</div></div>
+        <div class="tile"><div class="v">Clean</div><div class="k">DRC 0, LVS match</div></div>
       </div>
       <ul class="points">
         <li><b>Post-layout verified:</b> every transistor and wire, at all process corners.</li>
@@ -174,7 +174,7 @@ ul.points b { color: var(--ink); }
     </div>
     <div class="figure">
       <img src="ADC_VTC_DNL_INL.png" alt="Transfer curve, DNL and INL plots of the post-layout ADC at three corners">
-      <div class="caption">Post-layout transfer curve, DNL and INL at TT, SS and FF.</div>
+      <div class="caption">Post-layout transfer curve, DNL and INL at all five process corners.</div>
     </div>
   </div>
   <div class="pageno">3 / 5</div>
