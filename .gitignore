@@ -1,2 +1,8 @@
 __pycache__/
 *.vvp
+blender/renders/prev_*.png
+*.blend1
+blender/renders/anim/
+fpga/proto/tb_uart.txt
+fpga/proto/out/*.prm
+*.blend

@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swar live demo</title>
+<style>
+  :root {
+    --bg: #0a0d14; --panel: #121722; --panel2: #171d2b; --line: #252d40; --text: #e8ecf4; --dim: #8e99b0;
+    --accent: #ff9a3d; --ok: #3ddc84; --bad: #ff5d6c; --swar: #b98cff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1180px; margin: 0 auto; padding: 28px 20px 40px; }
+  header { display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; margin-bottom: 22px; }
+  h1 { font-size: 34px; letter-spacing: .14em; margin: 0; font-weight: 800; }
+  h1 span { color: var(--accent); }
+  header p { margin: 0; color: var(--dim); }
+  .controls { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px;
+              display: grid; grid-template-columns: 1fr auto; gap: 18px 28px; align-items: center; }
+  .label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 8px; }
+  .words { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { background: var(--panel2); color: var(--text); border: 1px solid var(--line); border-radius: 999px;
+          padding: 7px 16px; font: inherit; font-weight: 600; cursor: pointer; text-transform: uppercase;
+          font-size: 14px; letter-spacing: .05em; }
+  .chip:hover { border-color: var(--dim); }
+  .chip.sel { background: var(--accent); border-color: var(--accent); color: #1a1004; }
+  .level { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .level input[type=range] { flex: 1; min-width: 180px; accent-color: var(--accent); }
+  .level output { font-variant-numeric: tabular-nums; min-width: 86px; font-weight: 700; }
+  #rec { grid-row: 1 / span 2; grid-column: 2; width: 168px; height: 168px; border-radius: 50%; border: 0;
+         background: radial-gradient(circle at 35% 30%, #ffb46b, #f0761a); color: #1a1004; font: inherit;
+         font-weight: 800; font-size: 19px; cursor: pointer; box-shadow: 0 10px 40px #f0761a44; }
+  #rec small { display: block; font-weight: 600; font-size: 12px; opacity: .75; margin-top: 4px; }
+  #rec:disabled { filter: grayscale(.6); cursor: default; }
+  #rec.live { background: radial-gradient(circle at 35% 30%, #ff8a94, #e02b3f); color: #fff;
+              box-shadow: 0 0 0 10px #e02b3f33, 0 10px 40px #e02b3f66; }
+  .source { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 14px 2px 0; }
+  .source[hidden] { display: none; }
+  .source .label { margin: 0 4px 0 0; }
+  #boardState { color: var(--dim); font-size: 14px; }
+  #status { margin: 14px 2px 0; color: var(--dim); min-height: 24px; }
+  #status.err { color: var(--bad); }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+  .card { display: grid; grid-template-columns: 1fr 1.25fr; gap: 8px 26px; align-items: center; }
+  .card.swar { grid-column: 1 / -1; padding: 26px 28px; }
+  .card.swar h2 { font-size: 22px; color: var(--swar); }
+  .card.swar .word { font-size: 104px; }
+  .card.swar .verdict { font-size: 17px; }
+  .card.swar canvas { height: 200px; }
+  .card.mini { padding: 14px 16px; background: #0f131c; }
+  .card.mini h2 { font-size: 14px; color: var(--dim); font-weight: 600; }
+  .card.mini .sub { font-size: 12px; min-height: 0; }
+  .card.mini .word { font-size: 30px; margin: 6px 0 0; }
+  .card.mini .verdict { font-size: 12px; min-height: 17px; }
+  .card.mini .bar { height: 5px; margin: 6px 0 0; }
+  .card.mini canvas { height: 62px; }
+  .card.mini .play { margin-top: 8px; padding: 5px 10px; font-size: 12px; }
+  .compare { grid-column: 1 / -1; margin: 6px 2px -6px; font-size: 12px; letter-spacing: .12em;
+             text-transform: uppercase; color: var(--dim); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+  .card.swar { border-color: #6e4fb0; box-shadow: 0 0 0 1px #6e4fb055, 0 12px 50px #6e4fb022; }
+  .card h2 { margin: 0; font-size: 17px; }
+  .card .sub { color: var(--dim); font-size: 13px; margin-top: 2px; min-height: 38px; }
+  .word { font-size: 58px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; margin: 8px 0 2px;
+          line-height: 1.1; }
+  .word.ok { color: var(--ok); } .word.bad { color: var(--bad); } .word.idle { color: #39425a; }
+  .verdict { font-size: 14px; color: var(--dim); min-height: 21px; }
+  .bar { height: 8px; background: var(--panel2); border-radius: 4px; overflow: hidden; margin: 10px 0 14px; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--dim); transition: width .35s; }
+  .bar i.ok { background: var(--ok); } .bar i.bad { background: var(--bad); }
+  canvas { width: 100%; height: 110px; border-radius: 8px; background: #05070b; display: block;
+           image-rendering: pixelated; }
+  .play { margin-top: 12px; background: var(--panel2); border: 1px solid var(--line); color: var(--text);
+          border-radius: 10px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+  .play:disabled { opacity: .4; cursor: default; }
+  .sweep { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px;
+           margin-top: 16px; overflow-x: auto; }
+  .sweep h3 { margin: 0 0 4px; font-size: 17px; }
+  .sweep p { margin: 0 0 12px; color: var(--dim); font-size: 14px; }
+  table { border-collapse: separate; border-spacing: 6px; width: 100%; min-width: 640px; }
+  th { font-size: 12px; color: var(--dim); font-weight: 600; text-align: center; white-space: nowrap; }
+  th.row { text-align: left; color: var(--text); font-size: 14px; width: 170px; }
+  td { text-align: center; border-radius: 8px; padding: 9px 4px; font-weight: 700; text-transform: uppercase;
+       font-size: 14px; background: var(--panel2); color: #39425a; }
+  td.ok { background: #133a26; color: var(--ok); } td.bad { background: #43161c; color: var(--bad); }
+  td small { display: block; font-weight: 500; font-size: 11px; opacity: .7; }
+  footer { margin-top: 20px; color: var(--dim); font-size: 13px; }
+  @media (max-width: 860px) {
+    .cards { grid-template-columns: 1fr; }
+    .card { grid-template-columns: 1fr; }
+    .card.swar .word { font-size: 72px; }
+    .controls { grid-template-columns: 1fr; }
+    #rec { grid-row: auto; grid-column: auto; width: 100%; height: 76px; border-radius: 16px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>SW<span>A</span>R</h1>
+    <p>Say a keyword. The same recording goes through three converters, and the same tiny neural network listens to each.</p>
+  </header>
+
+  <section class="controls">
+    <div>
+      <div class="label">1 &nbsp;Pick the word you will say</div>
+      <div class="words" id="words"></div>
+    </div>
+    <button id="rec">Record<small>or press Space</small></button>
+    <div>
+      <div class="label">2 &nbsp;How loud the speech reaches the ADC</div>
+      <div class="level">
+        <button class="chip" data-lv="-6">Normal</button>
+        <button class="chip" data-lv="-26">Quiet</button>
+        <input type="range" id="level" min="-40" max="-6" step="1" value="-6">
+        <output id="levelOut">−6 dBFS</output>
+      </div>
+    </div>
+  </section>
+  <div class="source" id="source" hidden>
+    <span class="label">Audio from</span>
+    <button class="chip sel" data-src="mic">Laptop microphone</button>
+    <button class="chip" data-src="board">Basys3 board</button>
+    <span id="boardState"></span>
+  </div>
+  <div id="status">Allow the microphone when the browser asks. Recording lasts 1.6 seconds.</div>
+
+  <section class="cards" id="cards"></section>
+
+  <section class="sweep">
+    <h3>The same recording, made quieter step by step</h3>
+    <p>Each cell is what the network heard at that speech level. Green is the right word.</p>
+    <table id="sweep"></table>
+  </section>
+
+  <footer>Simulation: the Swar path uses the post-layout model of our 8-bit SAR ADC (SCL 1.2 µm) at 2 MS/s, followed by
+    the FPGA decimation filter (CIC ÷25, FIR ÷5). The chip is not fabricated yet. The speech level is set by scaling the
+    recording, and playback is level-matched so you can compare the sound.</footer>
+</main>
+
+<script>
+const WORDS = ["yes","no","up","down","left","right","on","off","stop","go"];
+const PATHS = [
+  {key:"adc",   name:"Swar",             sub:"Our 8-bit chip at 2 MS/s, plus FPGA oversampling: about 10 bits."},
+  {key:"ref16", name:"16-bit reference", sub:"Studio-grade converter: the best the network can do."},
+  {key:"nyq8",  name:"Plain 8-bit ADC",  sub:"8-bit converter at 16 kHz, no oversampling."},
+];
+const $ = id => document.getElementById(id);
+let runId = 0, target = "", last = null, lastSr = 16000, busy = false, actx = null, playing = null;
+
+// ---- controls
+WORDS.forEach(w => {
+  const b = document.createElement("button");
+  b.className = "chip"; b.textContent = w;
+  b.onclick = () => { target = (target === w) ? "" : w; paintWords(); if (last) analyse(); };
+  $("words").appendChild(b);
+});
+function paintWords() {
+  [...$("words").children].forEach(b => b.classList.toggle("sel", b.textContent === target));
+}
+function paintLevel() {
+  const v = +$("level").value;
+  $("levelOut").textContent = "−" + Math.abs(v) + " dBFS";
+  document.querySelectorAll("[data-lv]").forEach(b => b.classList.toggle("sel", +b.dataset.lv === v));
+}
+$("level").oninput = paintLevel;
+$("level").onchange = () => { if (last) analyse(); };
+document.querySelectorAll("[data-lv]").forEach(b => b.onclick = () => {
+  $("level").value = b.dataset.lv; paintLevel(); if (last) analyse();
+});
+paintLevel();
+
+// ---- result cards
+PATHS.forEach(p => {
+  const c = document.createElement("div");
+  c.className = "card " + (p.key === "adc" ? "swar" : "mini"); c.id = "card-" + p.key;
+  c.innerHTML = `<div><h2>${p.name}</h2><div class="sub">${p.sub}</div>
+    <div class="word idle">—</div><div class="verdict"></div><div class="bar"><i></i></div></div>
+    <div><canvas width="101" height="40"></canvas><button class="play" disabled>▶ Listen</button></div>`;
+  $("cards").appendChild(c);
+  if (p.key === "adc") {
+    const h = document.createElement("div"); h.className = "compare"; h.textContent = "For comparison, the same recording through";
+    $("cards").appendChild(h);
+  }
+});
+function status(msg, err) { $("status").textContent = msg; $("status").className = err ? "err" : ""; }
+
+// ---- Basys3 board (only when the server was started with --bridge or --serial)
+let source = "mic";
+function paintSource() {
+  document.querySelectorAll("[data-src]").forEach(b => b.classList.toggle("sel", b.dataset.src === source));
+  const board = source === "board";
+  $("level").disabled = board;
+  document.querySelectorAll("[data-lv]").forEach(b => b.disabled = board);
+  document.querySelector(".sweep").style.display = board ? "none" : "";
+  $("levelOut").textContent = board ? "set by your voice" : "−" + Math.abs(+$("level").value) + " dBFS";
+}
+document.querySelectorAll("[data-src]").forEach(b => b.onclick = () => { source = b.dataset.src; paintSource(); });
+async function pollBoard() {
+  try {
+    const st = await (await fetch("/api/board")).json();
+    if (!st.enabled) return;
+    $("source").hidden = false;
+    $("boardState").textContent = st.connected ? `connected, input level ${st.level_db} dBFS` : `waiting for the board (${st.how})`;
+  } catch (e) {}
+  setTimeout(pollBoard, 700);
+}
+pollBoard();
+async function recordBoard() {
+  busy = true; $("rec").disabled = true;
+  $("rec").classList.add("live"); $("rec").firstChild.textContent = "Speak now";
+  status("Listening on the board…");
+  let r;
+  try { r = await (await fetch("/api/board/record?" + new URLSearchParams({target}), {method: "POST", body: "x"})).json(); }
+  catch (e) { r = {error: "The demo server did not answer: " + e.message}; }
+  $("rec").classList.remove("live"); $("rec").firstChild.textContent = "Record";
+  busy = false; $("rec").disabled = false;
+  if (r.error) { status(r.error, true); return; }
+  runId++; last = null; show(r);
+}
+
+// ---- recording
+async function record() {
+  if (busy) return;
+  if (source === "board") return recordBoard();
+  busy = true; $("rec").disabled = true;
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({audio: {
+      echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1}});
+  } catch (e) {
+    status("No microphone access: " + e.message + ". Open this page as http://localhost and allow the microphone.", true);
+    busy = false; $("rec").disabled = false; return;
+  }
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const src = ctx.createMediaStreamSource(stream);
+  const proc = ctx.createScriptProcessor(4096, 1, 1);
+  const mute = ctx.createGain(); mute.gain.value = 0;
+  const need = Math.round(ctx.sampleRate * 1.6), skip = Math.round(ctx.sampleRate * 0.15);
+  const buf = new Float32Array(need + skip); let n = 0;
+  $("rec").classList.add("live"); $("rec").firstChild.textContent = "Speak now";
+  status("Listening…");
+  await new Promise(done => {
+    proc.onaudioprocess = e => {
+      const d = e.inputBuffer.getChannelData(0), k = Math.min(d.length, buf.length - n);
+      buf.set(d.subarray(0, k), n); n += k;
+      if (n >= buf.length) done();
+    };
+    src.connect(proc); proc.connect(mute); mute.connect(ctx.destination);
+  });
+  proc.disconnect(); src.disconnect(); stream.getTracks().forEach(t => t.stop());
+  lastSr = ctx.sampleRate; ctx.close();
+  last = buf.slice(skip);                       // drop the first 150 ms (click, microphone settling)
+  $("rec").classList.remove("live"); $("rec").firstChild.textContent = "Record";
+  busy = false; $("rec").disabled = false;
+  analyse();
+}
+$("rec").onclick = record;
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && !e.repeat) { e.preventDefault(); record(); }
+});
+
+// ---- analysis
+async function analyse() {
+  if (!last) return;
+  status("Converting and recognising…");
+  const run = ++runId;
+  const ask = async extra => {
+    const q = new URLSearchParams({level: $("level").value, sr: lastSr, ...extra});
+    return (await fetch("/api/classify?" + q, {method: "POST", body: last.buffer})).json();
+  };
+  let r;
+  try { r = await ask({target, sweep: 0}); }
+  catch (e) { status("The demo server did not answer: " + e.message, true); return; }
+  if (run !== runId) return;
+  if (r.error) { status(r.error, true); return; }
+  show(r);
+  const t = $("sweep");
+  t.style.opacity = .35;
+  let sw;
+  try { sw = await ask({target: r.target, sweep: 1}); } catch (e) { return; }
+  if (run !== runId || sw.error) return;
+  t.style.opacity = 1;
+  t.innerHTML = "<tr><th></th>" + sw.sweep.levels.map(l => `<th>−${Math.abs(l)} dBFS</th>`).join("") + "</tr>" +
+    sw.sweep.rows.map(row => `<tr><th class="row">${row.name}</th>` + row.cells.map(c =>
+      `<td class="${c.ok ? "ok" : "bad"}">${c.label}<small>${Math.round(c.conf * 100)}%</small></td>`).join("") + "</tr>").join("");
+}
+
+function show(r) {
+  const said = target ? "" : " (taken from the reference, since no word was picked)";
+  const where = r.source === "board" ? "Recorded by the Basys3 board. Peak level" : "Speech level";
+  status(`Target word: ${r.target.toUpperCase()}${said}. ${where} −${Math.abs(r.level)} dBFS. Processed in ${r.ms} ms.`);
+  r.paths.forEach(p => {
+    const c = $("card-" + p.key), w = c.querySelector(".word"), bar = c.querySelector(".bar i");
+    w.textContent = p.label; w.className = "word " + (p.ok ? "ok" : "bad");
+    c.querySelector(".verdict").textContent =
+      (p.ok ? "Correct" : "Wrong, expected " + r.target.toUpperCase()) + " · " + Math.round(p.conf * 100) + "% confident";
+    bar.style.width = Math.round(p.conf * 100) + "%"; bar.className = p.ok ? "ok" : "bad";
+    drawMel(c.querySelector("canvas"), p.mel, p.melT);
+    const btn = c.querySelector(".play"); btn.disabled = false; btn.onclick = () => play(p.audio);
+  });
+}
+
+function bytes(b64) { const s = atob(b64), a = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) a[i] = s.charCodeAt(i); return a; }
+function drawMel(cv, b64, T) {
+  const d = bytes(b64), M = d.length / T;
+  cv.width = T; cv.height = M;
+  const g = cv.getContext("2d"), img = g.createImageData(T, M);
+  for (let m = 0; m < M; m++) for (let t = 0; t < T; t++) {
+    const v = d[m * T + t] / 255, o = ((M - 1 - m) * T + t) * 4;
+    img.data[o]     = 255 * Math.min(1, Math.max(0, 2.2 * v - 0.35));
+    img.data[o + 1] = 255 * Math.min(1, Math.max(0, 1.9 * v - 0.75)) ;
+    img.data[o + 2] = 255 * Math.min(1, Math.max(0, 0.25 + 1.1 * v - 1.6 * v * v + 0.9 * Math.pow(v, 6)));
+    img.data[o + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+}
+function play(b64) {
+  actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+  if (playing) { try { playing.stop(); } catch (e) {} }
+  const pcm = new Int16Array(bytes(b64).buffer), ab = actx.createBuffer(1, pcm.length, 16000), ch = ab.getChannelData(0);
+  for (let i = 0; i < pcm.length; i++) ch[i] = pcm[i] / 32768;
+  playing = actx.createBufferSource(); playing.buffer = ab; playing.connect(actx.destination); playing.start();
+}
+</script>
+</body>
+</html>
