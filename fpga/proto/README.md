@@ -5,8 +5,9 @@ our SAR ADC would give (post-layout transfer curve), the FPGA oversamples and fi
 recognises the keyword and lights the matching LED on the board.
 
 Simulation (`tb_proto.v`, 1 kHz test tone at −1 dBFS, 50 Hz – 7 kHz): Swar path 58.7 dB SNDR (9.5 bit) from the 8-bit
-chip model at an oversampling ratio of 60; reference path 79.7 dB. The design has **not** been built in Vivado or run
-on a board yet.
+chip model at an oversampling ratio of 60; reference path 79.7 dB. Built in Vivado 2020.2 (worst setup slack
++1.12 ns, about 8 % of the LUTs); `out/` holds the bitstream and the QSPI flash image. It has been flashed to a Basys3
+and streams to the laptop; the microphone bias circuit was not yet working, so there is no measured hardware SNDR.
 
 ## Wiring
 
