@@ -74,6 +74,28 @@ cd ../fpga && iverilog -g2012 -o tb.vvp tb_voice.v voice_top.v && vvp -n tb.vvp 
 # (the FPGA holds the ADC in reset for the first ~10 ms; -DTSIM=<ns> sets a shorter or longer run)
 ```
 
+## Live demo (laptop only)
+
+```bash
+python3 demo/live_demo.py        # then open http://localhost:8765 in Chrome or Edge
+```
+
+Say one of the 10 keywords into the laptop microphone. The same recording goes through a 16-bit reference, a plain
+8-bit converter and the Swar path (post-layout ADC model + decimation), and the same CNN classifies each. The speech
+level slider scales the recording, so the quiet-speech case can be shown with one utterance. It runs the same code as
+`model/kws_eval.py`; it is a simulation, not a measurement of silicon.
+
+## Concept renders
+
+`blender/swar_scene.py` builds a concept board in Blender 4.2 (mic, ADC in a 40-pin package with the real layout on the
+die, FPGA, ESP32-S3) and renders `blender/renders/swar_hero.png` and `swar_chip.png`. The board is an illustration of
+the product idea, not a manufactured PCB.
+
+```bash
+blender -b -P blender/swar_scene.py -- --view hero --out blender/renders/swar_hero.png
+blender -b -P blender/swar_scene.py -- --view chip --out blender/renders/swar_chip.png
+```
+
 ## Notes
 
 - The voice results assume a 50 MHz ADC clock (2 MS/s). At 10 MHz (400 kS/s) the oversampling ratio drops from
